@@ -19,12 +19,19 @@ var rdb *redis.Client
 func main() {
 	host := os.Getenv("REDIS_HOST")
 	pass := os.Getenv("REDIS_PASSWORD")
+	insecure, err := strconv.ParseBool(os.Getenv("REDIS_INSECURE_SKIP_VERIFY"))
+
+	if err != nil {
+		fmt.Println("Error parsing boolean:", err)
+		insecure = false
+		fmt.Println("Defaulting to false")
+	}
 
 	rdb = redis.NewClient(&redis.Options{
 		Addr:     host,
 		Password: pass,
 		TLSConfig: &tls.Config{
-			InsecureSkipVerify: true, // Only for self-signed certificates
+			InsecureSkipVerify: insecure, // Only for self-signed certificates
 		},
 	})
 
